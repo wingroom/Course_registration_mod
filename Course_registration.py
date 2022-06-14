@@ -22,6 +22,8 @@ class GUI(tk.Frame):
 
 def main():
     root=tk.Tk()
+    gui = GUI(root)
+    root.mainloop()
 
 
 if __name__=='__main__':
