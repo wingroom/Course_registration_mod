@@ -1,14 +1,8 @@
 import os
 import sys
-import json
-import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox as msg
-from pdfminer.pdfinterp import PDFResourceManager
-from pdfminer.layout import LAParams
-from pdfminer.converter import TextConverter
-from pdfminer.pdfpage import PDFPage
-from pdfminer.pdfinterp import PDFPageInterpreter
+#import tkinter as tk
+#import Course_registration_GUI as GUI
+import Course_registration_PDF as PDF
 
 #GUIとpdfとseleniumで分ける
 
@@ -17,14 +11,12 @@ def resource_path(relative_path):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath('.'), relative_path)
 
-class GUI(tk.Frame):
-    pass
-
 def main():
-    root=tk.Tk()
-    gui = GUI(root)
-    root.mainloop()
-
+    #root=tk.Tk()
+    #gui = GUI.gui(master=root)
+    #gui.mainloop()
+    PDF.pdf('semester.pdf')
+    
 
 if __name__=='__main__':
     main()
