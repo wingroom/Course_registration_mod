@@ -1,22 +1,24 @@
-import os
-import sys
-#import tkinter as tk
-#import Course_registration_GUI as GUI
+from asyncio.windows_events import NULL
+import tkinter as tk
+import Course_registration_GUI as GUI
 import Course_registration_PDF as PDF
+import Course_registration_FILE as FILE
 
 #GUIとpdfとseleniumで分ける
-
-def resource_path(relative_path):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath('.'), relative_path)
+def tmp():
+    PDF.semepdf('semester.pdf')
+    print('finish')
 
 def main():
-    #root=tk.Tk()
-    #gui = GUI.gui(master=root)
-    #gui.mainloop()
-    PDF.pdf('semester.pdf')
-    
+    json_file = FILE.json_reader("setup.json")
+    if json_file["Department"]==NULL:
+        root=tk.Tk()
+        gui=GUI.setup_gui(master=root, jf=json_file)
+        gui.mainloop()
+    if json_file["Department"]!=NULL:
+        root=tk.Tk()
+        gui=GUI.main_gui(master=root, jf=json_file)
+        gui.mainloop()
 
 if __name__=='__main__':
     main()
