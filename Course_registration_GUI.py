@@ -22,13 +22,13 @@ class main_gui(tk.Frame):
         self.main_gui()
     
     def main_gui(self):
-        self.semecsv=FILE.csv_reader8(self.resource_path(f'all\{self.jf["semester"]}.csv'))
+        self.semecsv=FILE.csv_reader8(f'all\{self.jf["semester"]}.csv')
         self.countlist=[]
         for i in range(1,5):
             for j in range(1,5):
                 self.countlist.append('B'+str(i)+' '+str(j)+'Q')
         self.semester=tk.StringVar(self)
-        self.semester.set(self.jf["semester"])
+        self.semester.set(' '.join(self.jf["semester"].split('_')))
         self.semem=tk.OptionMenu(self,self.semester,*self.countlist,command=self.seme_sele)
         self.semem.grid(row=0,column=0)
         timetable=[[''for i in range(6)]for j in range(5)]
@@ -75,7 +75,7 @@ class main_gui(tk.Frame):
 
     def puti(self,time):
         #ここでサブの画面を表示させてtreeviewを使って考えよう
-        csvs=FILE.csv_reader8(self.resource_path('seme_after.csv'))
+        csvs=FILE.csv_reader8(f'semester\{self.jf["semester"]}')
         print('puti in')
         tmp=None
         if time[0]=='1':
@@ -139,9 +139,9 @@ class main_gui(tk.Frame):
 
     def pbutton(self, val):
         #val [選択要素(単位名,クラス,学年,教室), 曜日]
-        seme=FILE.csv_reader8(self.resource_path(f'all\{self.jf["semester"]}.csv'))
+        seme=FILE.csv_reader8(f'all\{self.jf["semester"]}.csv')
         seme.append([val[0][0],val[1],val[0][3]])
-        FILE.csv_writer8(self.resource_path(f'all\{self.jf["semester"]}.csv'))
+        FILE.csv_writer8(f'all\{self.jf["semester"]}.csv')
         
     def seme_sele(self,val):
         self.jf["semester"]=val
