@@ -92,40 +92,26 @@ def semepdf(pdf_path):
         val[i][9]=''.join(val[i][9].splitlines())
         val[i][11]=''.join(val[i][11].splitlines())
         
-    for i in range(4):
-        for j in range(4):
-            for k in range(5):
-                FILE.csv_writer8(f'semester\B{i+1}_{j+1}Q\月{k+1}.csv','')
-                FILE.csv_writer8(f'semester\B{i+1}_{j+1}Q\火{k+1}.csv','')
-                FILE.csv_writer8(f'semester\B{i+1}_{j+1}Q\水{k+1}.csv','')
-                FILE.csv_writer8(f'semester\B{i+1}_{j+1}Q\木{k+1}.csv','')
-                FILE.csv_writer8(f'semester\B{i+1}_{j+1}Q\金{k+1}.csv','')
-                FILE.csv_writer8(f'semester\B{i+1}_{j+1}Q\土{k+1}.csv','')
-        FILE.csv_writer8(f'semester\B{i+1}\\1st.csv','')
-        FILE.csv_writer8(f'semester\B{i+1}\\2nd.csv','')
+    for i in range(5):
+        FILE.csv_writer8(f'semester\月{i+1}.csv','')
+        FILE.csv_writer8(f'semester\火{i+1}.csv','')
+        FILE.csv_writer8(f'semester\水{i+1}.csv','')
+        FILE.csv_writer8(f'semester\木{i+1}.csv','')
+        FILE.csv_writer8(f'semester\金{i+1}.csv','')
+        FILE.csv_writer8(f'semester\土{i+1}.csv','')
+    FILE.csv_writer8(f'semester\\1st.csv','')
+    FILE.csv_writer8(f'semester\\2nd.csv','')
     FILE.csv_writer8('semester\\all.csv','')
 
     for i in range(len(val)):
-        if val[i][3]=='前期':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_1Q\{val[i][1]}{val[i][2]}.csv',val[i])
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_2Q\{val[i][1]}{val[i][2]}.csv',val[i])
-        elif val[i][3]=='前期前':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_1Q\{val[i][1]}{val[i][2]}.csv',val[i])
-        elif val[i][3]=='前期後':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_2Q\{val[i][1]}{val[i][2]}.csv',val[i])
-        elif val[i][3]=='後期':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_3Q\{val[i][1]}{val[i][2]}.csv',val[i])
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_4Q\{val[i][1]}{val[i][2]}.csv',val[i])
-        elif val[i][3]=='後期前':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_3Q\{val[i][1]}{val[i][2]}.csv',val[i])
-        elif val[i][3]=='後期後':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}_4Q\{val[i][1]}{val[i][2]}.csv',val[i])
-        elif val[i][3]=='前集中':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}\\1st.csv',val[i])
+        if val[i][3]=='前集中':
+            FILE.csv_writer8_a(f'semester\\1st.csv',val[i])
         elif val[i][3]=='後集中':
-            FILE.csv_writer8_a(f'semester\B{val[i][4]}\\2nd.csv',val[i])
+            FILE.csv_writer8_a(f'semester\\2nd.csv',val[i])
         elif val[i][3]=='通年':
             FILE.csv_writer8_a('semester\\all.csv',val[i])
+        else:
+            FILE.csv_writer8_a(f'semester\{val[i][1]}{val[i][2]}.csv',val[i])
 
 def unitpdf(file_path):
     tabula.convert_into(file_path, 'unit.csv', output_format='csv', pages='4')
