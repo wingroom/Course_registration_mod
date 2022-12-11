@@ -36,5 +36,5 @@ def json_reader(file_path):
     return val
 
 def json_writer(file_path,val):
-    with open(file_path,'w') as f:
+    with open(resource_path(file_path),'w') as f:
         json.dump(val,f,indent=4)

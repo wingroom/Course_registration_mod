@@ -1,5 +1,8 @@
+from doctest import master
+from logging import root
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import Course_registration_FILE as FILE
 import pandas as pd
 
@@ -7,15 +10,20 @@ class main_gui(tk.Frame):
     def __init__(self, master,jf):
         super().__init__(master)
         self.pack()
-        master.geometry('1400x700')
+        master.geometry('1400x720')
         master.title('履修')
         master.iconbitmap(FILE.resource_path('icon.ico'))
         self.sum=0
         self.jf=jf
         self.subwin=None
         self.main_gui()
-    
+
     def main_gui(self):
+        menu_bar=tk.Menu(self)
+        menu_setting=tk.Menu(menu_bar,tearoff=0)
+        menu_bar.add_cascade(label='設定',menu=menu_setting)
+        menu_setting.add_command(label='環境設定',command=self.setting)
+        self.master.config(menu=menu_bar)
         self.semecsv=FILE.csv_reader8(f'all\{self.jf["semester"]}.csv')
         self.countlist=[]
         for i in range(4):
@@ -58,10 +66,21 @@ class main_gui(tk.Frame):
 
         for i in range(5):
             for j in range(6):
-                button=tk.Button(self,text=timetable[i][j],width=22,height=7,justify=tk.CENTER,relief=tk.RIDGE,font=('遊明朝',13))
-                button.config(command=self.outer(i,j))
+                flag=False
+                button=tk.Button(self,text=timetable[i][j],width=22,height=7,background='#eee',justify=tk.CENTER,relief=tk.RIDGE,font=('遊明朝',13))
+                vals=FILE.csv_reader8(f'semester\{self.day(j)}{i+1}.csv')
+                if not len(timetable[i][j]):
+                    for row in vals:
+                        if f'B{row[4]}_{self.seme(time=row[3])}Q'==self.jf["semester"] or f'B{row[4]}_{self.seme(time=row[3])-4}Q'==self.jf["semester"] or f'B{row[4]}_{self.seme(time=row[3])-3}Q'==self.jf["semester"]:
+                            flag=True
+                if flag:
+                    button.config(background='#E8EEF6')
+                button.config(command=self.outer(i=i,j=j))
                 button.grid(row=i+1,column=j+1)
-        
+
+    def setting():
+        pass
+
     def outer(self,i,j):
         def inner():
             self.puti(time=str(j+1)+str(i+1))
@@ -69,36 +88,11 @@ class main_gui(tk.Frame):
 
     def puti(self,time):
         #ここでサブの画面を表示させてtreeviewを使って考えよう
-        tmp=None
-        if time[0]=='1':
-            tmp='月'+time[1]
-        elif time[0]=='2':
-            tmp='火'+time[1]
-        elif time[0]=='3':
-            tmp='水'+time[1]
-        elif time[0]=='4':
-            tmp='木'+time[1]
-        elif time[0]=='5':
-            tmp='金'+time[1]
-        elif time[0]=='6':
-            tmp='土'+time[1]
+        tmp=f'{self.day(int(time[0])-1)}{time[1]}'
         csvs=FILE.csv_reader8(f'semester\{tmp}.csv')
         selist=[]
         for row in csvs:
-            if row[3][0]=='前':
-                if row[3][-1]=='期':
-                    a=5
-                elif row[3][-1]=='前':
-                    a=1
-                elif row[3][-1]=='後':
-                    a=2
-            elif row[3][0]=='後':
-                if row[3][-1]=='期':
-                    a=7
-                elif row[3][-1]=='前':
-                    a=3
-                elif row[3][-1]=='後':
-                    a=4
+            a=self.seme(row[3])
             if self.jf["semester"][3]==str(a) or (a>4 and (self.jf["semester"][3]==str(a-4) or self.jf["semester"][3]==str(a-3))):
                 if int(self.jf["semester"][1])>=int(row[4]):
                     selist.append(row)
@@ -130,8 +124,17 @@ class main_gui(tk.Frame):
                 if len(row)!=0:
                     self.tree.insert(parent='',index='end',values=(row[6],row[5],row[4],row[9],row[11],row[3]))
             self.tree.pack()
-            self.button=tk.Button(self.subwin, text='決定',command=lambda:self.pbutton(val=[self.tree.item(self.tree.selection(), 'values'),tmp]))
-            self.button.pack()
+            self.button1=tk.Button(self.subwin, text='決定',command=lambda:self.pbutton(val=[self.tree.item(self.tree.selection(), 'values'),tmp]))
+            self.button1.pack()
+            self.button2=tk.Button(self.subwin,text='削除',command=lambda:self.ppbutton(time=tmp))
+            self.button2.pack()
+
+    def ppbutton(self, time):
+        df=pd.read_csv(f'all\{self.jf["semester"]}.csv')
+        df.drop(df[df['時間']==time].index,inplace=True)
+        df.to_csv(f'all\{self.jf["semester"]}.csv',encoding='utf-8-sig',index=False)
+        self.subwin.destroy()
+        self.main_gui()
 
     def pbutton(self, val):
         #val [選択要素(単位名,クラス,学年,教室,対開講,期間), 曜日]
@@ -174,20 +177,48 @@ class main_gui(tk.Frame):
                 FILE.csv_writer8_a(f'all\{self.jf["semester"]}.csv',[val[0][0], val[0][4][4:6],val[0][3]])
         self.subwin.destroy()
         self.main_gui()
-        
+
     def seme_sele(self,val):
         self.jf["semester"]='_'.join(val.split())
         self.main_gui()
 
 class setup_gui(tk.Frame):
-    def __init__(self, master, jf):
-        super.__init__(master)
+    def __init__(self, master=None, jf=None):
+        super().__init__(master)
         self.pack()
-        master.geometry('300x200')
-        master.title('初期設定')
-        master.iconbitmap(FILE.resource_path('icon.ico'))
+        self.master.geometry('250x100')
+        self.master.title('初期設定')
+        self.master.iconbitmap(FILE.resource_path('icon.ico'))
         self.jf=jf
         self.setup_gui()
-        
+
     def setup_gui(self):
-        pass
+        #学籍番号と起動画面の選択
+        l1=tk.Label(self,text='学籍番号上４桁')
+        l2=tk.Label(self,text='起動画面')
+        e1=tk.Entry(self,width=15)
+        c1=ttk.Combobox(self,values=('B1','B2','B3','B4'),width=4)
+        c2=ttk.Combobox(self,values=('1Q','2Q','3Q','4Q'),width=4)
+        c1.set('B1')
+        c2.set('1Q')
+        b1=tk.Button(self,text='決定',command=lambda:self.setup(val=[e1.get(),c1.get(),c2.get()]))
+        l1.grid(row=0,column=0)
+        l2.grid(row=1,column=0)
+        e1.grid(row=0,column=1,columnspan=2)
+        c1.grid(row=1,column=1)
+        c2.grid(row=1,column=2)
+        b1.grid(row=2,column=1)
+
+    def setup(self,val):
+        if len(val[0])==4:
+            try:
+                ret=messagebox.askyesno('確認', f'学籍番号上４桁：{val[0]}\n起動画面：{val[1]} {val[2]}')
+                if ret:
+                    self.jf["Department"]=val[0]
+                    self.jf["semester"]=val[1]+'_'+val[2]
+                    FILE.json_writer('setup\setup.json', self.jf)
+                    self.master.destroy()
+            except:
+                messagebox.showerror('エラー','学籍番号上４桁は半角数字４桁を入力してください')
+        else:
+            messagebox.showerror('エラー','学籍番号上４桁は半角数字４桁を入力してください')
